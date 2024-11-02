@@ -42,7 +42,11 @@ def login():
         
         if username in users and users[username] == password:
             session['username'] = username
-            return redirect(url_for('imposter_page' if username == 'Imposter' else 'chat'))
+            # Redirect to the appropriate page based on the user
+            if username == 'Imposter':
+                return redirect(url_for('imposter_page'))
+            else:
+                return redirect(url_for('chat'))
         else:
             error = "Invalid credentials. Try again."
     return render_template('index.html', error=error)
@@ -52,6 +56,12 @@ def chat():
     if 'username' not in session:
         return redirect(url_for('login'))
     return render_template('chat.html', chat_history=chat_history)
+
+@app.route('/imposter_page')
+def imposter_page():
+    if 'username' not in session or session['username'] != 'Imposter':
+        return redirect(url_for('login'))
+    return render_template('imposter.html', chat_history=chat_history)
 
 @app.route('/get_messages')
 def get_messages():
@@ -74,7 +84,7 @@ def send_message():
         'message': message_data['message']
     }
     chat_history.append(user_message)
-
+    
     # Generate an AI response for 'John' only
     if username == 'John':
         jane_last_message = next((msg['message'] for msg in reversed(chat_history) 
@@ -92,7 +102,7 @@ def send_message():
                     chat_history.append(ai_message)
             except Exception as e:
                 print(f"Error generating AI response: {e}")
-
+    
     return jsonify({'success': True})
 
 @app.route('/imposter_action', methods=['POST'])
