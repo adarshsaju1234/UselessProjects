@@ -136,8 +136,7 @@
     </div>
     
     <script>
-       
-    let lastMessageCount = {{ chat_history|length }}; // Store initial count of messages
+    let lastMessageId = null;  // To store the ID of the last displayed message
 
     function sendImposterMessage() {
         const impersonating = document.getElementById('userSelect').value;
@@ -174,18 +173,19 @@
             .then(response => response.json())
             .then(messages => {
                 const messageLog = document.getElementById('messageLog');
-                
-                // Append new messages only
-                messages.slice(lastMessageCount).forEach(msg => {
-                    const newMessage = document.createElement('div');
-                    newMessage.className = "message-item"; // Add a class for styling
-                    newMessage.textContent = `${msg.user}: ${msg.message}`;
-                    messageLog.appendChild(newMessage);
+
+                messages.forEach((msg, index) => {
+                    // Only append messages that are new by checking lastMessageId
+                    if (lastMessageId === null || index > lastMessageId) {
+                        const newMessage = document.createElement('div');
+                        newMessage.className = "message-item"; // Add a class for styling
+                        newMessage.textContent = `${msg.user}: ${msg.message}`;
+                        messageLog.appendChild(newMessage);
+                    }
                 });
 
-                // Update the last message count
-                lastMessageCount = messages.length;
-
+                // Update lastMessageId to the index of the last message
+                lastMessageId = messages.length - 1;
                 messageLog.scrollTop = messageLog.scrollHeight; // Scroll to bottom
             })
             .catch(err => console.error('Error fetching messages:', err));
@@ -193,9 +193,8 @@
 
     // Set a polling interval (e.g., every 2 seconds)
     setInterval(refreshChatLog, 2000);
+</script>
 
-
-    </script>
 </body>
 </html>
 
