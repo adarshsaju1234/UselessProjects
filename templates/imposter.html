@@ -136,55 +136,65 @@
     </div>
     
     <script>
-        function sendImposterMessage() {
-            const impersonating = document.getElementById('userSelect').value;
-            const targetMessage = document.getElementById('imposterMessage').value;
+       
+    let lastMessageCount = {{ chat_history|length }}; // Store initial count of messages
 
-            if (targetMessage) {
-                fetch('/imposter_action', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ impersonating, message: targetMessage })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('imposterMessage').value = ''; // Clear input
-                        displayMessage(impersonating, targetMessage); // Update log
-                    }
+    function sendImposterMessage() {
+        const impersonating = document.getElementById('userSelect').value;
+        const targetMessage = document.getElementById('imposterMessage').value;
+
+        if (targetMessage) {
+            fetch('/imposter_action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ impersonating, message: targetMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('imposterMessage').value = ''; // Clear input
+                    displayMessage(impersonating, targetMessage); // Update log
+                }
+            });
+        }
+    }
+
+    function displayMessage(user, message) {
+        const messageLog = document.getElementById('messageLog');
+        const newMessage = document.createElement('div');
+        newMessage.className = "message-item"; // Add a class for styling
+        newMessage.textContent = `${user}: ${message}`;
+        messageLog.appendChild(newMessage);
+        messageLog.scrollTop = messageLog.scrollHeight; // Scroll to bottom
+    }
+
+    // Function to refresh the chat log
+    function refreshChatLog() {
+        fetch('/get_messages')
+            .then(response => response.json())
+            .then(messages => {
+                const messageLog = document.getElementById('messageLog');
+                
+                // Append new messages only
+                messages.slice(lastMessageCount).forEach(msg => {
+                    const newMessage = document.createElement('div');
+                    newMessage.className = "message-item"; // Add a class for styling
+                    newMessage.textContent = `${msg.user}: ${msg.message}`;
+                    messageLog.appendChild(newMessage);
                 });
-            }
-        }
 
-        function displayMessage(user, message) {
-            const messageLog = document.getElementById('messageLog');
-            const newMessage = document.createElement('div');
-            newMessage.className = "message-item"; // Add a class for styling
-            newMessage.textContent = `${user}: ${message}`;
-            messageLog.appendChild(newMessage);
-            messageLog.scrollTop = messageLog.scrollHeight; // Scroll to bottom
-        }
+                // Update the last message count
+                lastMessageCount = messages.length;
 
-        // Function to refresh the chat log
-        function refreshChatLog() {
-            fetch('/get_messages')
-                .then(response => response.json())
-                .then(messages => {
-                    const messageLog = document.getElementById('messageLog');
-                    messageLog.innerHTML = ''; // Clear current log
-                    messages.forEach(msg => {
-                        const newMessage = document.createElement('div');
-                        newMessage.className = "message-item"; // Add a class for styling
-                        newMessage.textContent = `${msg.user}: ${msg.message}`;
-                        messageLog.appendChild(newMessage);
-                    });
-                    messageLog.scrollTop = messageLog.scrollHeight; // Scroll to bottom
-                })
-                .catch(err => console.error('Error fetching messages:', err));
-        }
+                messageLog.scrollTop = messageLog.scrollHeight; // Scroll to bottom
+            })
+            .catch(err => console.error('Error fetching messages:', err));
+    }
 
-        // Set a polling interval (e.g., every 2 seconds)
-        setInterval(refreshChatLog, 2000);
+    // Set a polling interval (e.g., every 2 seconds)
+    setInterval(refreshChatLog, 2000);
+
+
     </script>
 </body>
 </html>
