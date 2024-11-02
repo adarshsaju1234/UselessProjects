@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imposter Mode</title>
+    <title>Hinder Imposter Mode</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
-        /* Your existing styles */
         :root {
             --primary-color: #FF4757;
             --secondary-color: #2ED573;
@@ -165,6 +164,28 @@
             messageLog.appendChild(newMessage);
             messageLog.scrollTop = messageLog.scrollHeight; // Scroll to bottom
         }
+
+        // Function to refresh the chat log
+        function refreshChatLog() {
+            fetch('/get_messages')
+                .then(response => response.json())
+                .then(messages => {
+                    const messageLog = document.getElementById('messageLog');
+                    messageLog.innerHTML = ''; // Clear current log
+                    messages.forEach(msg => {
+                        const newMessage = document.createElement('div');
+                        newMessage.className = "message-item"; // Add a class for styling
+                        newMessage.textContent = `${msg.user}: ${msg.message}`;
+                        messageLog.appendChild(newMessage);
+                    });
+                    messageLog.scrollTop = messageLog.scrollHeight; // Scroll to bottom
+                })
+                .catch(err => console.error('Error fetching messages:', err));
+        }
+
+        // Set a polling interval (e.g., every 2 seconds)
+        setInterval(refreshChatLog, 2000);
     </script>
 </body>
 </html>
+
