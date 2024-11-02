@@ -62,6 +62,267 @@
             }
         }
 
+        /* Partner name bar */
+        .partner-name-bar {
+            background-color: #fff;
+            color: #ff4d7e;
+            padding: 15px;
+            font-weight: 600;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+            border-bottom: 1px solid #ffe4eb;
+            font-size: clamp(16px, 4vw, 18px);
+        }
+
+        @media (max-width: 768px) {
+            .partner-name-bar {
+                border-radius: 0;
+            }
+        }
+
+        /* Messages box styling */
+        #messages {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: #fafafa;
+        }
+
+        @media (max-width: 480px) {
+            #messages {
+                padding: 15px;
+                gap: 10px;
+            }
+        }
+
+        .my-message, .their-message {
+            max-width: 80%;
+            padding: 12px 18px;
+            word-wrap: break-word;
+            font-size: clamp(14px, 3.5vw, 16px);
+            line-height: 1.4;
+        }
+
+        @media (max-width: 480px) {
+            .my-message, .their-message {
+                max-width: 85%;
+                padding: 10px 15px;
+            }
+        }
+
+        .my-message {
+            background: #ff4d7e;
+            border-radius: 18px 18px 0 18px;
+            box-shadow: 0 2px 8px rgba(255, 77, 126, 0.15);
+            color: white;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .their-message {
+            background: white;
+            border-radius: 18px 18px 18px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            color: #2c3e50;
+            font-weight: 500;
+            margin-right: auto;
+            border: 1px solid #ffe4eb;
+        }
+
+        /* Input area styling */
+        .input-area {
+            display: flex;
+            justify-content: space-between;
+            padding: clamp(10px, 3vw, 15px);
+            background: white;
+            border-top: 1px solid #ffe4eb;
+            border-radius: 0 0 20px 20px;
+            position: sticky;
+            bottom: 0;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .input-area {
+                border-radius: 0;
+                padding: 10px;
+            }
+        }
+
+        #input {
+            width: 75%;
+            padding: clamp(10px, 3vw, 12px) clamp(15px, 4vw, 20px);
+            border: 2px solid #ffe4eb;
+            border-radius: 25px;
+            outline: none;
+            font-size: clamp(14px, 3.5vw, 16px);
+            color: #2c3e50;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        #input:focus {
+            border-color: #ff4d7e;
+        }
+
+        #input::placeholder {
+            color: #b4b4b4;
+        }
+
+        #sendBtn {
+            width: 25%;
+            padding: clamp(10px, 3vw, 12px);
+            background-color: #ff4d7e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: clamp(14px, 3.5vw, 16px);
+        }
+
+        @media (max-width: 480px) {
+            #sendBtn {
+                width: 30%;
+            }
+        }
+
+        #sendBtn:hover {
+            background-color: #ff3368;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 77, 126, 0.2);
+        }
+
+        @media (hover: none) {
+            #sendBtn:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) {
+            #input, #sendBtn {
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
+
+        /* Scrollbar styling */
+        #messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #messages::-webkit-scrollbar-track {
+            background: #fafafa;
+        }
+
+        #messages::-webkit-scrollbar-thumb {
+            background: #ffb3c6;
+            border-radius: 3px;
+        }
+
+        /* Safe area handling for modern mobile devices */
+        @supports (padding: max(0px)) {
+            .top-bar {
+                padding-top: max(15px, env(safe-area-inset-top));
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+            }
+
+            .input-area {
+                padding-bottom: max(15px, env(safe-area-inset-bottom));
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+            }
+        }
+    </style>
+</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dating Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and General styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            align-items: center;
+        }
+
+        /* Top bar styling */
+        .top-bar {
+            background-color: white;
+            color: #ff4d7e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            font-size: clamp(20px, 5vw, 24px);
+            font-family: 'Montserrat', sans-serif;
+            width: 100%;
+            box-shadow: 0 2px 15px rgba(255, 77, 126, 0.15);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* Chat container styling */
+        #chatbox {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            margin: 80px auto 20px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 100px);
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            #chatbox {
+                height: calc(100vh - 80px);
+                margin: 60px 0 0 0;
+                border-radius: 0;
+            }
+        }
+
+        /* Partner name bar */
+        .partner-name-bar {
+            background-color: #fff;
+            color: #ff4d7e;
+            padding: 15px;
+            font-weight: 600;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+            border-bottom: 1px solid #ffe4eb;
+            font-size: clamp(16px, 4vw, 18px);
+        }
+
+        @media (max-width: 768px) {
+            .partner-name-bar {
+                border-radius: 0;
+            }
+        }
+
         /* Messages box styling */
         #messages {
             padding: 20px;
@@ -114,28 +375,21 @@
         }
 
         /* Input area styling */
-        .input-area {
+        #input-area {
             display: flex;
-            padding: 15px;
+            padding: 10px;
             border-top: 1px solid #e0e0e0;
-            background: white;
-            border-radius: 0 0 20px 20px;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            max-width: 90%;
-            margin: 0 auto;
+            position: relative;
         }
 
         #input-message {
             flex: 1;
             border: 1px solid #e0e0e0;
             border-radius: 20px;
-            padding: 12px 15px;
+            padding: 10px;
             font-size: clamp(14px, 3.5vw, 16px);
+            margin-right: 10px;
             transition: border 0.3s ease;
-            max-width: 400px;
         }
 
         #input-message:focus {
@@ -147,12 +401,11 @@
             background: #ff4d7e;
             border: none;
             border-radius: 20px;
-            padding: 12px 25px;
+            padding: 10px 20px;
             color: white;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.3s ease;
-            white-space: nowrap;
         }
 
         #send-button:hover {
@@ -161,109 +414,81 @@
     </style>
 </head>
 <body>
-    <div class="top-bar">Chat with {{ 'Jane' if session['username'] == 'John' else 'John' }}</div>
+    <div class="top-bar">
+        <span>Hinder</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
     <div id="chatbox">
+        <div class="partner-name-bar">Chat with {{ session['username'] }}</div>
         <div id="messages">
             {% for msg in chat_history %}
-                <div class="{{ 'my-message' if msg.user == session['username'] else 'their-message' }}">
+                <div class="{% if msg.user == session['username'] %}my-message{% else %}their-message{% endif %}">
                     {{ msg.message }}
                 </div>
             {% endfor %}
         </div>
-        <div class="input-area">
-            <input type="text" id="input-message" placeholder="Type your message...">
-            <button id="send-button" onclick="sendMessage()">Send</button>
+        <div id="input-area">
+            <input type="text" id="input-message" placeholder="Type your message..." required>
+            <button id="send-button">Send</button>
         </div>
     </div>
 
     <script>
-        let messageCache = [];
-        let isFirstLoad = true;
+        document.getElementById('send-button').addEventListener('click', sendMessage);
 
-        function updateMessages(messages) {
-            const messagesContainer = document.getElementById('messages');
-            
-            // On first load, or if we have new messages, update the display
-            if (isFirstLoad || JSON.stringify(messages) !== JSON.stringify(messageCache)) {
-                messagesContainer.innerHTML = '';
-                messages.forEach(msg => {
-                    const messageElement = document.createElement('div');
-                    messageElement.className = msg.user === "{{ session['username'] }}" ? 'my-message' : 'their-message';
-                    messageElement.textContent = msg.message;
-                    messagesContainer.appendChild(messageElement);
-                });
-                
-                // Scroll to bottom only if we have new messages or it's first load
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                messageCache = messages;
-                isFirstLoad = false;
-            }
-        }
+        // Fetch messages from the server when the chat loads
+        window.onload = function() {
+            fetchMessages(); // Initial fetch
+            setInterval(fetchMessages, 3000); // Fetch new messages every 3 seconds
+        };
 
         function fetchMessages() {
             fetch('/get_messages')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.messages) {
-                        updateMessages(data.messages);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching messages:', error);
-                    // On error, keep showing cached messages
+                    // Clear the current messages and display the latest
+                    const messagesContainer = document.getElementById('messages');
+                    const currentMessages = Array.from(messagesContainer.children).map(msg => msg.textContent);
+
+                    // Only append new messages
+                    data.forEach(msg => {
+                        if (!currentMessages.includes(msg.message)) {
+                            appendMessage(msg.user === "{{ session['username'] }}" ? 'my-message' : 'their-message', msg.message);
+                        }
+                    });
                 });
         }
 
         function sendMessage() {
-            const input = document.getElementById('input-message');
-            const message = input.value.trim();
-            if (message) {
-                // Optimistically add the message to the UI
-                const newMessage = {
-                    user: "{{ session['username'] }}",
-                    message: message
-                };
-                messageCache.push(newMessage);
-                updateMessages(messageCache);
+            const messageInput = document.getElementById('input-message');
+            const message = messageInput.value.trim();
 
-                // Send to server
-                fetch('/send_message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message: message })
-                }).then(() => {
-                    input.value = '';
-                    fetchMessages(); // Refresh to sync with server
-                }).catch(error => {
-                    console.error('Error sending message:', error);
-                    // Remove the optimistically added message if send fails
-                    messageCache.pop();
-                    updateMessages(messageCache);
-                });
-            }
+            if (!message) return;
+
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageInput.value = ''; // Clear the input after sending
+                }
+            });
         }
 
-        // Add event listener for Enter key
-        document.getElementById('input-message').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        // Initial fetch
-        fetchMessages();
-
-        // Set up periodic updates
-        setInterval(fetchMessages, 3000);
-
-        // Optional: Add visibility change handler to refresh when tab becomes visible
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                fetchMessages();
-            }
-        });
+        function appendMessage(className, message) {
+            const messagesContainer = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = className;
+            messageElement.textContent = message;
+            messagesContainer.appendChild(messageElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the latest message
+        }
     </script>
 </body>
+</html>
 </html>
