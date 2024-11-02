@@ -13,7 +13,6 @@ generation_config = {
     "max_output_tokens": 8192,
     "response_mime_type": "text/plain",
 }
-
 model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
     generation_config=generation_config,
@@ -23,7 +22,8 @@ model = genai.GenerativeModel(
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# Chat history in memory
+# Chat history in memory - Make it a global list
+global chat_history
 chat_history = []
 
 # Sample users
@@ -55,39 +55,58 @@ def chat():
 
 @app.route('/get_messages')
 def get_messages():
-    return jsonify({'messages': chat_history})
+    global chat_history
+    return jsonify(chat_history)  # Return the entire chat history as a list
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
+    global chat_history  # Access the global chat_history
+    
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 403
-
+        
     message_data = request.get_json()
     username = session['username']
-    message = {'user': username, 'message': message_data['message']}
-    chat_history.append(message)
+    
+    # Create and append the user's message
+    user_message = {
+        'user': username,
+        'message': message_data['message']
+    }
+    chat_history.append(user_message)
 
     # Generate an AI response for 'John' only
     if username == 'John':
-        jane_last_message = next((msg['message'] for msg in reversed(chat_history) if msg['user'] == 'Jane'), None)
+        jane_last_message = next((msg['message'] for msg in reversed(chat_history) 
+                                if msg['user'] == 'Jane'), None)
         if jane_last_message:
-            response = model.start_chat().send_message(jane_last_message)
-            ai_response = response.text.strip()
-
-            if ai_response.lower() != "no response":
-                ai_message = {'user': 'AI', 'message': ai_response}
-                chat_history.append(ai_message)
+            try:
+                response = model.start_chat().send_message(jane_last_message)
+                ai_response = response.text.strip()
+                
+                if ai_response.lower() != "no response":
+                    ai_message = {
+                        'user': 'Jane',  # AI responds as Jane
+                        'message': ai_response
+                    }
+                    chat_history.append(ai_message)
+            except Exception as e:
+                print(f"Error generating AI response: {e}")
 
     return jsonify({'success': True})
 
 @app.route('/imposter_action', methods=['POST'])
 def imposter_action():
+    global chat_history
     data = request.get_json()
     impersonating = data.get('impersonating')
     target_message = data.get('message')
     
     if impersonating in users:
-        message = {'user': impersonating, 'message': target_message}
+        message = {
+            'user': impersonating,
+            'message': target_message
+        }
         chat_history.append(message)
         return jsonify({'success': True})
     return jsonify({'error': 'User not found'}), 404
@@ -99,4 +118,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
