@@ -135,114 +135,67 @@
     </div>
 
     <script>
-        let lastMessageId = 0; // Track the last message ID
-        const messagesContainer = document.getElementById('messages');
-        const messageInput = document.getElementById('input-message');
-        const sendButton = document.getElementById('send-button');
-
-        // Initialize chat and set up event listeners
-        function initializeChat() {
-            loadInitialMessages();
-            setupEventListeners();
-            startMessagePolling();
+    document.getElementById('send-button').addEventListener('click', sendMessage);
+    document.getElementById('input-message').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
         }
+    });
 
-        // Load initial messages
-        async function loadInitialMessages() {
-            try {
-                const response = await fetch('/get_messages');
-                const messages = await response.json();
-                displayMessages(messages);
-            } catch (error) {
-                console.error('Error loading initial messages:', error);
-            }
-        }
+    let displayedMessages = new Set();
 
-        // Set up event listeners
-        function setupEventListeners() {
-            sendButton.addEventListener('click', handleSendMessage);
-            messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleSendMessage();
-                }
-            });
-        }
-
-        // Handle sending messages
-        async function handleSendMessage() {
-            const message = messageInput.value.trim();
-            if (!message) return;
-
-            try {
-                const response = await fetch('/send_message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message: message })
+    function fetchMessages() {
+        fetch('/get_messages')
+            .then(response => response.json())
+            .then(messages => {
+                messages.forEach(msg => {
+                    const messageKey = `${msg.user}-${msg.message}`;
+                    if (!displayedMessages.has(messageKey)) {
+                        displayedMessages.add(messageKey);
+                        appendMessage(msg.user, msg.message);
+                    }
                 });
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-                const result = await response.json();
-                if (result.success) {
-                    messageInput.value = '';
-                    // Immediately append the sent message
-                    appendMessage({
-                        message: message,
-                        user: "{{ session['username'] }}",
-                        id: Date.now() // Temporary ID
-                    });
-                }
-            } catch (error) {
-                console.error('Error sending message:', error);
+    function sendMessage() {
+        const messageInput = document.getElementById('input-message');
+        const message = messageInput.value.trim();
+
+        if (!message) return;
+
+        fetch('/send_message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                messageInput.value = '';
             }
-        }
+        })
+        .catch(error => console.error('Error:', error));
+    }
 
-        // Start message polling
-        function startMessagePolling() {
-            setInterval(pollNewMessages, 2000);
-        }
+    function appendMessage(user, message) {
+        const messagesContainer = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.className = user === "{{ session['username'] }}" ? 'my-message' : 'their-message';
+        messageElement.textContent = message;
+        messagesContainer.appendChild(messageElement);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
 
-        // Poll for new messages
-        async function pollNewMessages() {
-            try {
-                const response = await fetch(`/get_messages?after=${lastMessageId}`);
-                const newMessages = await response.json();
-                if (newMessages.length > 0) {
-                    displayMessages(newMessages);
-                }
-            } catch (error) {
-                console.error('Error polling messages:', error);
-            }
-        }
-
-        // Display messages
-        function displayMessages(messages) {
-            messages.forEach(message => {
-                if (message.id > lastMessageId) {
-                    appendMessage(message);
-                    lastMessageId = message.id;
-                }
-            });
-        }
-
-        // Append a single message
-        function appendMessage(message) {
-            const messageElement = document.createElement('div');
-            messageElement.className = message.user === "{{ session['username'] }}" ? 'my-message' : 'their-message';
-            messageElement.textContent = message.message;
-            messageElement.dataset.messageId = message.id;
-            
-            messagesContainer.appendChild(messageElement);
-            scrollToBottom();
-        }
-
-        // Scroll to bottom of messages
-        function scrollToBottom() {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Initialize chat when page loads
-        document.addEventListener('DOMContentLoaded', initializeChat);
-    </script>
+    // Start fetching messages when page loads
+    window.onload = function() {
+        fetchMessages();
+        // Poll for new messages every 2 seconds
+        setInterval(fetchMessages, 2000);
+    };
+</script>
 </body>
 </html>
