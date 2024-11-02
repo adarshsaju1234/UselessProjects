@@ -136,7 +136,7 @@
     </div>
     
     <script>
-    let lastMessageId = null;  // To store the ID of the last displayed message
+    let lastMessageId = null;  // Store the ID of the last displayed message
 
     function sendImposterMessage() {
         const impersonating = document.getElementById('userSelect').value;
@@ -174,18 +174,19 @@
             .then(messages => {
                 const messageLog = document.getElementById('messageLog');
 
-                messages.forEach((msg, index) => {
-                    // Only append messages that are new by checking lastMessageId
-                    if (lastMessageId === null || index > lastMessageId) {
+                messages.forEach(msg => {
+                    // Only append messages that are new by checking if the ID is different from the lastMessageId
+                    if (msg.id !== lastMessageId) {
                         const newMessage = document.createElement('div');
                         newMessage.className = "message-item"; // Add a class for styling
                         newMessage.textContent = `${msg.user}: ${msg.message}`;
                         messageLog.appendChild(newMessage);
+
+                        // Update lastMessageId to the current message ID
+                        lastMessageId = msg.id;
                     }
                 });
 
-                // Update lastMessageId to the index of the last message
-                lastMessageId = messages.length - 1;
                 messageLog.scrollTop = messageLog.scrollHeight; // Scroll to bottom
             })
             .catch(err => console.error('Error fetching messages:', err));
@@ -194,6 +195,7 @@
     // Set a polling interval (e.g., every 2 seconds)
     setInterval(refreshChatLog, 2000);
 </script>
+
 
 </body>
 </html>
